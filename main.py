@@ -1,24 +1,35 @@
-# researchgpt/main.py
-
-from arxiv_fetcher import fetch_arxiv_papers
-from summarizer import summarize_text
-from report_generator import generate_pdf_report
+from searcher import Searcher
+from summarizer import Summarizer
+from critic import Critic
+from synthesizer import Synthesizer
+from reporter import generate_pdf
 
 def main():
-    topic = input("Enter a research topic: ")
+    query = input("Enter research topic: ")
 
-    print(f"\n🔍 Fetching papers on '{topic}'...")
-    papers = fetch_arxiv_papers(topic, max_results=5)
+    searcher = Searcher(max_results=10)
+    summarizer = Summarizer()
+    critic = Critic(threshold=0.5)
+    synthesizer = Synthesizer()
 
-    print(f"🧠 Summarizing {len(papers)} papers...\n")
+    print(f"Searching papers for '{query}'...")
+    papers = searcher.fetch_papers(query)
+
+    print(f"Summarizing papers...")
     for paper in papers:
-        print(f"→ Summarizing: {paper['title']}")
-        paper['summary'] = summarize_text(paper['summary'])
+        paper['summary'] = summarizer.summarize(paper['summary'])
 
-    print("📝 Generating PDF report...")
-    generate_pdf_report(papers)
+    print(f"Filtering papers...")
+    papers = critic.filter_papers(papers)
 
-    print("\n✅ Done! Your research summary is saved as 'researchgpt_report.pdf'.")
+    print(f"Synthesizing summaries...")
+    synthesis = synthesizer.synthesize(papers)
+
+    print(f"Generating report...")
+    generate_pdf(papers)
+
+    print("\nReport generated: multi_agent_report.pdf")
+    print("\nSynthesis Preview:\n", synthesis[:500], "...")
 
 if __name__ == "__main__":
     main()
