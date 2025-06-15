@@ -1,0 +1,6 @@
+langgraph
+langchain
+transformers
+arxiv
+PyPDF2
+requests

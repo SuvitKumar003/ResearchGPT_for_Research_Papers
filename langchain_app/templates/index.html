@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ResearchGPT</title>
+</head>
+<body>
+    <h2>Ask your paper anything:</h2>
+    <input id="queryInput" type="text" placeholder="Type your question here" />
+    <button onclick="submitQuery()">Ask</button>
+    <div id="results"></div>
+
+    <script>
+        async function submitQuery() {
+            const query = document.getElementById('queryInput').value;
+            const response = await fetch('/query', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({query})
+            });
+
+            const data = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            if (data.results) {
+                data.results.forEach((res, i) => {
+                    resultsDiv.innerHTML += `<p><strong>Chunk ${i+1}:</strong> ${res}</p>`;
+                });
+            } else {
+                resultsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
